@@ -1,0 +1,14 @@
+-- Esquema PostgreSQL para Supabase.
+-- Ejecutar una sola vez en el SQL Editor del proyecto Supabase.
+
+CREATE TABLE IF NOT EXISTS users (
+    id          VARCHAR(36)  PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    email       VARCHAR(150) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    role        VARCHAR(20)  NOT NULL CHECK (role IN ('ADMIN', 'MEMBER', 'REVIEWER')),
+    status      VARCHAR(20)  NOT NULL DEFAULT 'PENDING'
+                    CHECK (status IN ('ACTIVE', 'INACTIVE', 'PENDING', 'BLOCKED')),
+    created_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
