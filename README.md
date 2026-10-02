@@ -13,6 +13,27 @@ Spring es el único *composition root*: `Main` inicia el contexto y las dependen
 
 En Windows se puede utilizar `mvnw.cmd`.
 
+## Ejecución local con Docker
+
+Desde PowerShell, en la carpeta del repositorio, inicia los servicios con:
+
+```powershell
+docker compose up --build -d
+```
+
+Swagger estará disponible en `http://localhost:8081/swagger-ui/index.html` y
+MySQL en el puerto local `3307`. Dentro de Compose, la API se conecta a MySQL
+por el nombre de servicio `mysql` y el puerto `3306`.
+
+Los puertos locales se pueden cambiar con las variables `API_PUBLISHED_PORT`
+y `MYSQL_PUBLISHED_PORT` antes de ejecutar `docker compose up`.
+
+Para detener los servicios sin borrar los datos de MySQL, ejecuta:
+
+```powershell
+docker compose down
+```
+
 ## Despliegue en Render
 
 El archivo `render.yaml` define el servicio web, el build con Docker y el despliegue
