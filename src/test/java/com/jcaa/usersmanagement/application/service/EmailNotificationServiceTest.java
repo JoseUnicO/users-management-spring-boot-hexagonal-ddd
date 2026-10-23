@@ -28,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Tests para EmailNotificationService.
  *
- * <p>Cubre: flujos felices de notificación, re-lanzamiento de EmailSenderException, template no
+ * <p>Cubre: flujos felices de notificación, fallo de SMTP no bloqueante, template no
  * encontrado (is == null) e IOException al leer el template.
  */
 @DisplayName("EmailNotificationService")
@@ -98,32 +98,34 @@ class EmailNotificationServiceTest {
                         && dest.getSubject().contains("actualizada")));
   }
 
-  // ── re-lanzar EmailSenderException en notifyUserCreated
+  // ── fallo SMTP no bloquea notifyUserCreated
 
   @Test
-  @DisplayName("notifyUserCreated() re-lanza EmailSenderException cuando el puerto falla")
-  void shouldRethrowEmailSenderExceptionOnCreate() {
+  @DisplayName("notifyUserCreated() no falla si el puerto SMTP no puede enviar")
+  void shouldNotFailWhenSmtpFailsOnCreate() {
     // Arrange
     final EmailSenderException cause =
         EmailSenderException.becauseSmtpFailed(EMAIL, "Connection refused");
     doThrow(cause).when(emailSenderPort).send(any());
 
     // Act & Assert
-    assertThrows(EmailSenderException.class, () -> service.notifyUserCreated(user, PASSWORD));
+    assertDoesNotThrow(() -> service.notifyUserCreated(user, PASSWORD));
+    verify(emailSenderPort).send(any());
   }
 
-  // ── re-lanzar EmailSenderException en notifyUserUpdated
+  // ── fallo SMTP no bloquea notifyUserUpdated
 
   @Test
-  @DisplayName("notifyUserUpdated() re-lanza EmailSenderException cuando el puerto falla")
-  void shouldRethrowEmailSenderExceptionOnUpdate() {
+  @DisplayName("notifyUserUpdated() no falla si el puerto SMTP no puede enviar")
+  void shouldNotFailWhenSmtpFailsOnUpdate() {
     // Arrange
     final EmailSenderException cause =
         EmailSenderException.becauseSmtpFailed(EMAIL, "Connection refused");
     doThrow(cause).when(emailSenderPort).send(any());
 
     // Act & Assert
-    assertThrows(EmailSenderException.class, () -> service.notifyUserUpdated(user));
+    assertDoesNotThrow(() -> service.notifyUserUpdated(user));
+    verify(emailSenderPort).send(any());
   }
 
   // ── loadTemplate() — rama: template no encontrado (is == null)
